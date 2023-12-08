@@ -3,8 +3,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("../../public/fonts/inter/Inter-Regular.woff2?v=3.19")
-    format("woff2");
+  src: url("../../public/fonts/inter/Inter-Regular.woff2?v=3.19") format("woff2");
 }
 
 .main {
@@ -87,4 +86,19 @@
   line-height: 1.4em;
   font-size: 0.9em;
   color: rgb(134, 153, 156);
+}
+
+.name {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  margin: 1rem 0;
+}
+
+/* Style when the input is focused */
+.name:focus {
+  outline: none;
+  border-color: #5b9dd9;
+  box-shadow: 0 0 5px rgba(91, 157, 217, 0.5);
 }

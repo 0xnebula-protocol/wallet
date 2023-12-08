@@ -3,7 +3,7 @@ import styles from "../pages/index.module.css";
 import { getWebAuthnAttestation, TurnkeyClient } from "@turnkey/http";
 import axios from "axios";
 import { TWalletDetails } from "../types";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 type subOrgFormData = {
     subOrgName: string;
@@ -24,9 +24,6 @@ const base64UrlEncode = (challenge: ArrayBuffer): string => {
         .replace(/=/g, "");
 };
 
-const humanReadableDateTime = (): string => {
-    return new Date().toLocaleString().replaceAll("/", "-").replaceAll(":", ".");
-};
 
 type TWalletState = TWalletDetails | null;
 
@@ -34,15 +31,16 @@ function Create({ passkeyHttpClient, setWallet }: { passkeyHttpClient: TurnkeyCl
     const { handleSubmit: subOrgFormSubmit } = useForm<subOrgFormData>();
     const { register: _loginFormRegister, handleSubmit: loginFormSubmit } =
         useForm();
+    const [name, setName] = useState<string | null>(`Passkey Wallet at ${Date()}`);
     const createSubOrgAndWallet = async () => {
         const challenge = generateRandomBuffer();
-        const subOrgName = `Turnkey Viem+Passkey Demo - ${humanReadableDateTime()}`;
+        const subOrgName = name!;
         const authenticatorUserId = generateRandomBuffer();
 
         const attestation = await getWebAuthnAttestation({
             publicKey: {
                 rp: {
-                    id: "localhost",
+                    id: process.env.NEXT_PUBLIC_RPID!,
                     name: "Turnkey Viem Passkey Demo",
                 },
                 challenge,
@@ -58,9 +56,12 @@ function Create({ passkeyHttpClient, setWallet }: { passkeyHttpClient: TurnkeyCl
                 ],
                 user: {
                     id: authenticatorUserId,
-                    name: subOrgName,
+                    name: subOrgName.split(" ").join("-"),
                     displayName: subOrgName,
                 },
+                authenticatorSelection: {
+                    requireResidentKey: true,
+                }
             },
         });
 
@@ -105,15 +106,8 @@ function Create({ passkeyHttpClient, setWallet }: { passkeyHttpClient: TurnkeyCl
             <p className={styles.explainer}>
                 We&apos;ll prompt your browser to create a new passkey. The details
                 (credential ID, authenticator data, client data, attestation) will
-                be used to create a new{" "}
-                <a
-                    href="https://docs.turnkey.com/getting-started/sub-organizations"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Turnkey Sub-Organization
-                </a>
-                and a new{" "}
+                be used to create
+                a new{" "}
                 <a
                     href="https://docs.turnkey.com/getting-started/wallets"
                     target="_blank"
@@ -122,14 +116,16 @@ function Create({ passkeyHttpClient, setWallet }: { passkeyHttpClient: TurnkeyCl
                     Wallet
                 </a> within it.
                 <br />
-                <br />
-                This request to Turnkey will be created and signed by the backend
-                API key pair.
+
+                Can only contain alphanumeric characters, spaces, commas, periods, apostrophes, dashes, underscores, plus signs, and at signs.
             </p>
             <form
                 className={styles.form}
                 onSubmit={subOrgFormSubmit(createSubOrgAndWallet)}
             >
+                <input type="text" className={styles.name} onChange={(e) => {
+                    setName(e.target.value)
+                }} placeholder={"wallet name"} />
                 <input
                     className={styles.button}
                     type="submit"
