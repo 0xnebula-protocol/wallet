@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TWalletDetails } from "../types";
 import styles from "../pages/index.module.css";
 import { useForm } from 'react-hook-form';
 import { createAccount } from '@turnkey/viem';
 import { TurnkeyClient } from '@turnkey/http';
-import { createWalletClient, formatEther, http } from 'viem';
+import { createWalletClient, http } from 'viem';
 import { sepolia } from 'viem/chains';
+import { SafeSmartAccount, signerToSafeSmartAccount } from 'permissionless/accounts'
+import { publicClient } from '@/utils';
 
 type signingFormData = {
     messageToSign: string;
@@ -18,12 +20,16 @@ type TSignedMessage = {
 } | null;
 
 
-
 function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkeyHttpClient: TurnkeyClient }) {
     const { register: signingFormRegister, handleSubmit: signingFormSubmit } =
         useForm<signingFormData>();
 
     const [signedMessage, setSignedMessage] = useState<TSignedMessage>(null);
+    const [safeWallet, setSafeWallet] = useState<SafeSmartAccount | null>();
+
+    useEffect(() => {
+        createAAWallet();
+    }, [wallet])
 
     const signMessage = async (data: signingFormData) => {
         if (!wallet) {
@@ -53,6 +59,28 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
         });
     };
 
+    const createAAWallet = async () => {
+        const viemAccount = await createAccount({
+            client: passkeyHttpClient,
+            organizationId: wallet.subOrgId,
+            signWith: wallet.address,
+            ethereumAddress: wallet.address,
+        });
+
+        const viemClient = createWalletClient({
+            account: viemAccount,
+            chain: sepolia,
+            transport: http(),
+        });
+        const account = await signerToSafeSmartAccount(publicClient("goerli"), {
+            signer: viemClient.account,
+            entryPoint: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+            safeVersion: "1.4.1"
+        });
+        setSafeWallet(account);
+        return account;
+    }
+
     return (
         <div>
             <div className={styles.info}>
@@ -62,6 +90,17 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
                 Balance:
                 <span className={styles.code}> {wallet.balance}</span>
             </div>
+            {
+                safeWallet && (
+                    <div className={styles.info}>
+                        Safe AA address: <br />
+                        <span className={styles.code}>{safeWallet.address}</span>
+                        <br /><br />
+                        Balance:
+                        <span className={styles.code}> { }</span>
+                    </div>
+                )
+            }
             <div>
                 <h2>Now let&apos;s sign something!</h2>
                 <p className={styles.explainer}>
