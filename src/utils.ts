@@ -19,7 +19,9 @@ export const publicClient = (chain: String) => {
 }
 
 export const chain = {
-  1: 'ethereum'
+  1: 'ethereum',
+  5: 'goerli',
+  84531: 'base-goerli'
 }
 
 export const paymasterClient = createPimlicoPaymasterClient({
