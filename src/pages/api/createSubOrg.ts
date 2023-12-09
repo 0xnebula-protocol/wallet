@@ -95,6 +95,7 @@ export default async function createUser(
       id: walletId,
       address: walletAddress,
       subOrgId: subOrgId,
+      balance: "0"
     });
   } catch (e) {
     console.error(e);

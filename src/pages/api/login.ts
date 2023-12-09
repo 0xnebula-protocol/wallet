@@ -6,11 +6,13 @@ import {
 } from "@turnkey/http";
 import { ApiKeyStamper } from "@turnkey/api-key-stamper";
 import { THttpError, TWalletDetails } from "@/types";
+import { publicClient } from "@/utils";
+import { formatEther } from "viem";
 
 
 export default async function login(
   req: NextApiRequest,
-  res: NextApiResponse<TWalletDetails|THttpError>
+  res: NextApiResponse<TWalletDetails | THttpError>
 ) {
   // This signed request is a signed whoami request, coming from the frontend, signed by the end-user's passkey.
   let signedRequest = req.body as TSignedRequest;
@@ -45,19 +47,22 @@ export default async function login(
     );
 
     const walletsResponse = await client.getWallets({
-        organizationId: subOrgId,
+      organizationId: subOrgId,
     });
     const accountsResponse = await client.getWalletAccounts({
-    organizationId: subOrgId,
-    walletId: walletsResponse.wallets[0].walletId,
+      organizationId: subOrgId,
+      walletId: walletsResponse.wallets[0].walletId,
     });
     const walletId = accountsResponse.accounts[0].walletId;
     const walletAddress = accountsResponse.accounts[0].address;
-    
+
+    const balance = await publicClient("goerli").getBalance({ address: walletAddress as `0x${string}` });
+
     res.status(200).json({
-        id: walletId,
-        address: walletAddress,
-        subOrgId: subOrgId,
+      id: walletId,
+      address: walletAddress,
+      subOrgId: subOrgId,
+      balance: formatEther(balance)
     });
   } catch (e) {
     console.error(e);

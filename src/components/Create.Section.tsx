@@ -77,7 +77,7 @@ function Create({ passkeyHttpClient, setWallet }: { passkeyHttpClient: TurnkeyCl
 
         const client = publicClient("goerli");
 
-        const balance = await client.getBalance({ address: response.address });
+        const balance = await client.getBalance({ address: response.address as `0x${string}` });
 
         response.balance = formatEther(balance);
 
@@ -104,7 +104,7 @@ function Create({ passkeyHttpClient, setWallet }: { passkeyHttpClient: TurnkeyCl
 
             const client = publicClient("goerli");
 
-            const balance = await client.getBalance({ address: response.address });
+            const balance = await client.getBalance({ address: response.address as `0x${string}` });
 
             response.balance = formatEther(balance);
 
