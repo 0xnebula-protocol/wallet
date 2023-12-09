@@ -4,6 +4,8 @@ import { getWebAuthnAttestation, TurnkeyClient } from "@turnkey/http";
 import axios from "axios";
 import { TWalletDetails } from "../types";
 import { Dispatch, SetStateAction, useState } from "react";
+import { publicClient } from "@/utils";
+import { formatEther, parseEther } from "viem";
 
 type subOrgFormData = {
     subOrgName: string;
@@ -71,7 +73,13 @@ function Create({ passkeyHttpClient, setWallet }: { passkeyHttpClient: TurnkeyCl
             challenge: base64UrlEncode(challenge),
         });
 
-        const response = res.data as TWalletDetails;
+        let response = res.data as TWalletDetails;
+
+        const client = publicClient("goerli");
+
+        const balance = await client.getBalance({ address: response.address });
+
+        response.balance = formatEther(balance);
 
         setWallet(response);
     };
@@ -92,7 +100,14 @@ function Create({ passkeyHttpClient, setWallet }: { passkeyHttpClient: TurnkeyCl
                 throw new Error(`error while logging in (${res.status}): ${res.data}`);
             }
 
-            const response = res.data as TWalletDetails;
+            let response = res.data as TWalletDetails;
+
+            const client = publicClient("goerli");
+
+            const balance = await client.getBalance({ address: response.address });
+
+            response.balance = formatEther(balance);
+
             setWallet(response);
         } catch (e: any) {
             const message = `caught error: ${e.toString()}`;

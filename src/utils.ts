@@ -1,4 +1,4 @@
-import { createPublicClient, http } from "viem";
+import { PublicClient, createPublicClient, http } from "viem";
 import { createPimlicoPaymasterClient } from "permissionless/clients/pimlico";
 
 export function refineNonNull<T>(
@@ -12,9 +12,9 @@ export function refineNonNull<T>(
   return input;
 }
 
-export const publicClient = (chain: String) => {
+export const publicClient = (chain: String): PublicClient => {
   return createPublicClient({
-    transport: http(`https://api.pimlico.io/v2/${chain}/rpc?apikey=${process.env.PIMLICO_API_KEY}`),
+    transport: http(`https://${chain}.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`),
   });
 }
 
@@ -26,6 +26,6 @@ export const chain = {
 
 export const paymasterClient = createPimlicoPaymasterClient({
   transport: http(
-    "https://api.pimlico.io/v2/CHAIN/rpc?apikey=API_KEY",
+    `https://api.pimlico.io/v2/${chain}/rpc?apikey=${process.env.NEXT_PUBLIC_PIMLICO_API_KEY}`,
   ),
 });

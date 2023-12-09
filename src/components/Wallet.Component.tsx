@@ -4,7 +4,7 @@ import styles from "../pages/index.module.css";
 import { useForm } from 'react-hook-form';
 import { createAccount } from '@turnkey/viem';
 import { TurnkeyClient } from '@turnkey/http';
-import { createWalletClient, http } from 'viem';
+import { createWalletClient, formatEther, http } from 'viem';
 import { sepolia } from 'viem/chains';
 
 type signingFormData = {
@@ -58,6 +58,9 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
             <div className={styles.info}>
                 ETH address: <br />
                 <span className={styles.code}>{wallet.address}</span>
+                <br /><br />
+                Balance:
+                <span className={styles.code}> {wallet.balance}</span>
             </div>
             <div>
                 <h2>Now let&apos;s sign something!</h2>
