@@ -41,6 +41,7 @@ export default function Home() {
         height={50}
         priority
       />
+      {wallet && <button className={styles.button} onClick={() => setWallet(null)}>🔒 Lock Wallet</button>}
       <div>
         {wallet && (
           <Wallet wallet={wallet} passkeyHttpClient={passkeyHttpClient} />
