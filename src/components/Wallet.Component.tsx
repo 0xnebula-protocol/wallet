@@ -120,7 +120,7 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
             </div>
             <div>
                 <h2>send a transaction</h2>
-                <p className={styles.explainer}>send 0.01 ETH to an address of your choice using pimlico's paymasters!</p>
+                <p className={styles.explainer}>send 0.01 ETH to an address of your choice using pimlico$apos;s paymasters!</p>
                 <div className={styles.row}>
                     <input type="text" onChange={e => setTo(e.target.value as any)} placeholder="recipient" className={styles.input} />
                     <button className={styles.button} onClick={sendAATransaction} >Send 0.01 ETH</button>
