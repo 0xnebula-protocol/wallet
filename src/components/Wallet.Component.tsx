@@ -4,7 +4,7 @@ import styles from "../pages/index.module.css";
 import { useForm } from 'react-hook-form';
 import { createAccount } from '@turnkey/viem';
 import { TurnkeyClient } from '@turnkey/http';
-import { createWalletClient, http } from 'viem';
+import { createWalletClient, formatEther, http } from 'viem';
 import { sepolia } from 'viem/chains';
 import { SafeSmartAccount, signerToSafeSmartAccount } from 'permissionless/accounts'
 import { publicClient } from '@/utils';
@@ -19,13 +19,17 @@ type TSignedMessage = {
     signature: string;
 } | null;
 
+type SafeWallet = {
+    account: SafeSmartAccount;
+    balance: string;
+}
 
 function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkeyHttpClient: TurnkeyClient }) {
     const { register: signingFormRegister, handleSubmit: signingFormSubmit } =
         useForm<signingFormData>();
 
     const [signedMessage, setSignedMessage] = useState<TSignedMessage>(null);
-    const [safeWallet, setSafeWallet] = useState<SafeSmartAccount | null>();
+    const [safeWallet, setSafeWallet] = useState<SafeWallet | null>();
 
     useEffect(() => {
         createAAWallet();
@@ -77,7 +81,8 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
             entryPoint: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
             safeVersion: "1.4.1"
         });
-        setSafeWallet(account);
+        const balance = await publicClient("goerli").getBalance({ address: account.address })
+        setSafeWallet({ account, balance: formatEther(balance) });
         return account;
     }
 
@@ -94,10 +99,10 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
                 safeWallet && (
                     <div className={styles.info}>
                         Safe AA address: <br />
-                        <span className={styles.code}>{safeWallet.address}</span>
+                        <span className={styles.code}>{safeWallet.account.address}</span>
                         <br /><br />
                         Balance:
-                        <span className={styles.code}> { }</span>
+                        <span className={styles.code}> {safeWallet.balance}</span>
                     </div>
                 )
             }
