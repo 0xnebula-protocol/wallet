@@ -32,10 +32,19 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
     const [signedMessage, setSignedMessage] = useState<TSignedMessage>(null);
     const [safeWallet, setSafeWallet] = useState<SafeWallet | null>();
     const [to, setTo] = useState<`0x${string}`>("0x0");
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         createAAWallet();
     }, [wallet])
+
+    setTimeout(async () => {
+        if (safeWallet) {
+            const balance = await publicClient("goerli").getBalance({ address: safeWallet.account.address })
+            setSafeWallet({ ...safeWallet, balance: formatEther(balance) });
+        }
+
+    }, 10_000)
 
     const signMessage = async (data: signingFormData) => {
         if (!wallet) {
@@ -89,6 +98,7 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
     }
 
     const sendAATransaction = async () => {
+        setLoading(true);
         const aaWallet = createSmartAccountClient({
             account: safeWallet?.account,
             transport: http(
@@ -100,6 +110,7 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
             value: parseEther("0.01"),
             chain: goerli
         })
+        setLoading(false);
         console.log(txn)
     }
 
@@ -123,7 +134,7 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
                 <p className={styles.explainer}>send 0.01 ETH to an address of your choice using pimlico&apos;s paymasters!</p>
                 <div className={styles.row}>
                     <input type="text" onChange={e => setTo(e.target.value as any)} placeholder="recipient" className={styles.input} />
-                    <button className={styles.button} onClick={sendAATransaction} >Send 0.01 ETH</button>
+                    <button className={styles.button} disabled={loading} onClick={sendAATransaction}>{loading ? "processing..." : "Send 0.01 ETH"}</button>
                 </div>
             </div>
             {/* <div>
