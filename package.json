@@ -20,8 +20,6 @@
     "@types/node": "20.3.1",
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6",
-    "@waku/react": "^0.0.5-63a782d",
-    "@waku/sdk": "^0.0.21",
     "axios": "^1.4.0",
     "encoding": "^0.1.13",
     "eslint": "8.43.0",
