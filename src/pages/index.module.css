@@ -102,3 +102,13 @@
   border-color: #5b9dd9;
   box-shadow: 0 0 5px rgba(91, 157, 217, 0.5);
 }
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  margin: 1rem 0;
+}

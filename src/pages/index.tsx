@@ -14,7 +14,7 @@ type TWalletState = TWalletDetails | null;
 export default function Home() {
   const [wallet, setWallet] = useState<TWalletState>(null);
 
-  const { register: _loginFormRegister, handleSubmit: loginFormSubmit } =
+  const { register: _loginFormRegister } =
     useForm();
 
   const stamper = new WebauthnStamper({

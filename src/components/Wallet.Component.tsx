@@ -88,24 +88,26 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
 
     return (
         <div>
-            <div className={styles.info}>
-                ETH address: <br />
-                <span className={styles.code}>{wallet.address}</span>
-                <br /><br />
-                Balance:
-                <span className={styles.code}> {wallet.balance}</span>
+            <div className={styles.row}>
+                <div className={styles.info}>
+                    ETH address: <br />
+                    <span className={styles.code}>{wallet.address}</span>
+                    <br /><br />
+                    Balance:
+                    <span className={styles.code}> {wallet.balance} ETH</span>
+                </div>
+                {
+                    safeWallet && (
+                        <div className={styles.info}>
+                            Safe AA address: <br />
+                            <span className={styles.code}>{safeWallet.account.address}</span>
+                            <br /><br />
+                            Balance:
+                            <span className={styles.code}> {safeWallet.balance.substring(0, 6)} ETH</span>
+                        </div>
+                    )
+                }
             </div>
-            {
-                safeWallet && (
-                    <div className={styles.info}>
-                        Safe AA address: <br />
-                        <span className={styles.code}>{safeWallet.account.address}</span>
-                        <br /><br />
-                        Balance:
-                        <span className={styles.code}> {safeWallet.balance}</span>
-                    </div>
-                )
-            }
             <div>
                 <h2>Now let&apos;s sign something!</h2>
                 <p className={styles.explainer}>
@@ -120,11 +122,16 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
                         {...signingFormRegister("messageToSign")}
                         placeholder="Write something to sign..."
                     />
-                    <input
-                        className={styles.button}
-                        type="submit"
-                        value="Sign Message"
-                    />
+                    <div className={styles.row}>
+                        <input
+                            className={styles.button}
+                            type="submit"
+                            value="Sign Message"
+                        />
+                        <button type='button' className={styles.button} onClick={(e) => setSignedMessage(null)}>
+                            Clear Signature
+                        </button>
+                    </div>
                 </form>
                 {signedMessage && (
                     <div className={styles.info}>
