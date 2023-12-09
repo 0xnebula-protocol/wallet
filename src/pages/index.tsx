@@ -33,16 +33,14 @@ export default function Home() {
       <Head>
         <title>nebula wallet</title>
       </Head>
-      <a href="https://turnkey.com" target="_blank" rel="noopener noreferrer">
-        <Image
-          src="/logo.png"
-          alt="Nebula Logo"
-          className={styles.turnkeyLogo}
-          width={50}
-          height={50}
-          priority
-        />
-      </a>
+      <Image
+        src="/logo.png"
+        alt="Nebula Logo"
+        className={styles.turnkeyLogo}
+        width={50}
+        height={50}
+        priority
+      />
       <div>
         {wallet && (
           <Wallet wallet={wallet} passkeyHttpClient={passkeyHttpClient} />
