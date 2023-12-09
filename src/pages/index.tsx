@@ -7,6 +7,7 @@ import { useState } from "react";
 import { TWalletDetails } from "../types";
 import Create from "@/components/Create.Section";
 import Wallet from "@/components/Wallet.Component";
+import Head from "next/head";
 
 type TWalletState = TWalletDetails | null;
 
@@ -29,6 +30,9 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
+      <Head>
+        <title>nebula wallet</title>
+      </Head>
       <a href="https://turnkey.com" target="_blank" rel="noopener noreferrer">
         <Image
           src="/logo.png"

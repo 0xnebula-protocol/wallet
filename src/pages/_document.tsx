@@ -6,7 +6,6 @@ class ViemPasskeysDemo extends Document {
       <Html>
         <Head>
           <link rel="icon" type="image/png" href="/favicon.png" />
-          <title>nebula wallet</title>
         </Head>
         <body>
           <Main />
