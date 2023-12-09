@@ -4,10 +4,11 @@ import styles from "../pages/index.module.css";
 import { useForm } from 'react-hook-form';
 import { createAccount } from '@turnkey/viem';
 import { TurnkeyClient } from '@turnkey/http';
-import { createWalletClient, formatEther, http } from 'viem';
-import { sepolia } from 'viem/chains';
+import { createWalletClient, formatEther, http, parseEther } from 'viem';
+import { goerli, sepolia } from 'viem/chains';
 import { SafeSmartAccount, signerToSafeSmartAccount } from 'permissionless/accounts'
-import { publicClient } from '@/utils';
+import { paymasterClient, publicClient } from '@/utils';
+import { createSmartAccountClient } from 'permissionless';
 
 type signingFormData = {
     messageToSign: string;
@@ -30,6 +31,7 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
 
     const [signedMessage, setSignedMessage] = useState<TSignedMessage>(null);
     const [safeWallet, setSafeWallet] = useState<SafeWallet | null>();
+    const [to, setTo] = useState<`0x${string}`>("0x0");
 
     useEffect(() => {
         createAAWallet();
@@ -79,27 +81,35 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
         const account = await signerToSafeSmartAccount(publicClient("goerli"), {
             signer: viemClient.account,
             entryPoint: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-            safeVersion: "1.4.1"
+            safeVersion: "1.4.1",
         });
         const balance = await publicClient("goerli").getBalance({ address: account.address })
         setSafeWallet({ account, balance: formatEther(balance) });
         return account;
     }
 
+    const sendAATransaction = async () => {
+        const aaWallet = createSmartAccountClient({
+            account: safeWallet?.account,
+            transport: http(
+                `https://api.pimlico.io/v1/goerli/rpc?apikey=${process.env.NEXT_PUBLIC_PIMLICO_API_KEY}`),
+            sponsorUserOperation: paymasterClient("goerli").sponsorUserOperation
+        });
+        const txn = await aaWallet.sendTransaction({
+            to: to,
+            value: parseEther("0.01"),
+            chain: goerli
+        })
+        console.log(txn)
+    }
+
     return (
         <div>
             <div className={styles.row}>
-                <div className={styles.info}>
-                    ETH address: <br />
-                    <span className={styles.code}>{wallet.address}</span>
-                    <br /><br />
-                    Balance:
-                    <span className={styles.code}> {wallet.balance} ETH</span>
-                </div>
                 {
                     safeWallet && (
                         <div className={styles.info}>
-                            Safe AA address: <br />
+                            AA Wallet Address: <br />
                             <span className={styles.code}>{safeWallet.account.address}</span>
                             <br /><br />
                             Balance:
@@ -109,6 +119,14 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
                 }
             </div>
             <div>
+                <h2>send a transaction</h2>
+                <p className={styles.explainer}>send 0.01 ETH to an address of your choice using pimlico's paymasters!</p>
+                <div className={styles.row}>
+                    <input type="text" onChange={e => setTo(e.target.value as any)} placeholder="recipient" className={styles.input} />
+                    <button className={styles.button} onClick={sendAATransaction} >Send 0.01 ETH</button>
+                </div>
+            </div>
+            {/* <div>
                 <h2>Now let&apos;s sign something!</h2>
                 <p className={styles.explainer}>
                     Sign a message using your passkeys wallet.
@@ -152,7 +170,7 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
                         </a>
                     </div>
                 )}
-            </div>
+            </div> */}
         </div>
     )
 }
