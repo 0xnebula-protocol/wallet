@@ -76,7 +76,7 @@
   background-color: rgb(240, 249, 250);
   word-break: break-all;
   box-shadow: inset 0 0 4px #e2e8e8;
-  width: 30vw;
+  /* width: 30vw; */
 }
 
 .code {
