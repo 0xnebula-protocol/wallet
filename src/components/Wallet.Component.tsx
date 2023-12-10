@@ -120,6 +120,9 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
                 {
                     safeWallet && (
                         <div className={styles.info}>
+                            Signer Address: <br />
+                            <span className={styles.code}> {wallet.address}</span>
+                            <br /><br />
                             AA Wallet Address: <br />
                             <span className={styles.code}>{safeWallet.account.address}</span>
                             <br /><br />
@@ -129,8 +132,8 @@ function Wallet({ wallet, passkeyHttpClient }: { wallet: TWalletDetails, passkey
                     )
                 }
             </div>
-            <div>
-                <h2>send a transaction</h2>
+            <div className={styles.transaction}>
+                <h2 style={{ margin: "0.5rem 0 0 0" }}>send a transaction</h2>
                 <p className={styles.explainer}>send 0.01 ETH to an address of your choice using pimlico&apos;s paymasters!</p>
                 <div className={styles.row}>
                     <input type="text" onChange={e => setTo(e.target.value as any)} placeholder="recipient" className={styles.input} />

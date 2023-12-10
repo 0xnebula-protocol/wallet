@@ -76,6 +76,7 @@
   background-color: rgb(240, 249, 250);
   word-break: break-all;
   box-shadow: inset 0 0 4px #e2e8e8;
+  width: 30vw;
 }
 
 .code {
@@ -106,10 +107,18 @@
 
 .row {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
   width: fit-content;
-  margin: 1rem 0;
+  /* margin: 1rem 0; */
+}
+
+.transaction {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
 }
